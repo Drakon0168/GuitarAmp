@@ -1,7 +1,14 @@
+const MAX_GAIN = 2;
+
 let audio;
 let ctx;
 
-let gainNode;
+let analyserNode;
+
+export const NUM_SAMPLES = 256;
+
+export let frequencyData = new Uint8Array(NUM_SAMPLES / 2);
+export let waveData = new Uint8Array(NUM_SAMPLES / 2);
 
 export function init(){
     audio = document.querySelector("audio");
@@ -18,20 +25,17 @@ export function init(){
     
     let sourceNode = ctx.createMediaElementSource(audio);
     
-    gainNode = ctx.createGain();
-    gainNode.gain.value = 1;
+    analyserNode = ctx.createAnalyser();
+    analyserNode.fftSize = NUM_SAMPLES;
     
-    sourceNode.connect(gainNode);
-    gainNode.connect(ctx.destination);
     
-    ctx.resume();
-    //audio.play();
-    
-    console.log(ctx);
+    sourceNode.connect(analyserNode);
+    analyserNode.connect(ctx.destination);
 }
 
 export function update(){
-    
+    analyserNode.getByteFrequencyData(frequencyData);
+    analyserNode.getByteTimeDomainData(waveData);
 }
 
 export function togglePlay(e){
@@ -42,12 +46,16 @@ export function togglePlay(e){
     
     if (e.target.dataset.playing == "no") {
         audio.play();
-        //e.target.dataset.playing = "yes";
-        //e.target.innerHTML = "Pause";
+        e.target.dataset.playing = "yes";
+        e.target.innerHTML = "Mute";
     // if track is playing pause it
     } else if (e.target.dataset.playing == "yes") {
         audio.pause();
         e.target.dataset.playing = "no";
-        e.target.innerHTML = "Play";
+        e.target.innerHTML = "UnMute";
     }
+}
+
+export function setVolume(value){
+    audio.volume = value;
 }

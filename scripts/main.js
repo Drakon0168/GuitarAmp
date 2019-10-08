@@ -1,5 +1,6 @@
 import * as audio from "./audio.js";
 import * as graphics from "./graphics.js";
+import * as UI from "./UI.js";
 
 const timeStep = 10;
 
@@ -14,6 +15,7 @@ export let Time = Object.seal({
 function init(){
     graphics.init();
     audio.init();
+    UI.init();
     
     window.onresize = resize;
     updateInterval = window.setInterval(update, timeStep);
@@ -34,8 +36,6 @@ function update(){
 
 function resize(){
     graphics.resize();
-    
-    console.log("Window resized");
 }
 
 window.onload = init;
